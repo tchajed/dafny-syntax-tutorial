@@ -6,6 +6,12 @@ lemma SomeAssertions() {
   assert 1 + 2*3 == 7;
 }
 
+lemma BooleanFacts() {
+  assert true == false || true;
+  assert !(true ==> false);
+  assert false ==> false;
+}
+
 /* a function is a mathematical function: it is always deterministic, and is
   written without mutable variables or data structures */
 
@@ -35,7 +41,7 @@ lemma AbsStrictlyLarger(x: int)
   if x < 0 {
     // there's no error here! the postcondition actually does hold on this path
   } else {
-    // But here if we think about it we realize abs(x) == x.
+    // But here, if we think about it, we realize abs(x) == x.
     assert abs(x) == x;
   }
 }
