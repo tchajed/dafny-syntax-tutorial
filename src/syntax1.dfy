@@ -1,22 +1,39 @@
-/* Mathematical assertions */
+/** Mathematical assertions */
+
+/* A lemma can contain assertions. Unlike programming assertions, Dafny will
+statically check each assertion and report an error if it cannot prove it. This
+is similar to how the compiler checks your types and reports an error if they
+don't match. */
+
 lemma SomeAssertions() {
   assert 2 + 2 == 4;
   assert 1 < 2;
+  // this one is wrong
   assert -3*-2 == -6;
   assert 1 + 2*3 == 7;
 }
 
 lemma BooleanFacts() {
   assert true == false || true;
+  // Dafny has a boolean implies operator written p ==> q. As you might recall,
+  // p ==> q is the same as !p || q. Implications are quite common when writing
+  // logical properties.
   assert !(true ==> false);
   assert false ==> false;
 }
 
-/* a function is a mathematical function: it is always deterministic, and is
-  written without mutable variables or data structures */
+
+
+/** Functions */
+
+/* A Dafny `function` is a mathematical function: it is always deterministic,
+and is written without mutable variables or data structures. Functions are one
+way to build interesting objects to prove things about in Dafy. In the next
+lecture we'll see datatypes (both built-in and user-defined) which will give us
+a lot more to play with. */
 
 function abs(x: int): int {
-  /* if is an expression */
+  /* if is an _expression_ in Dafny, not a _statement_ */
   if x < 0 then -x else x
 }
 
@@ -46,12 +63,17 @@ lemma AbsStrictlyLarger(x: int)
   }
 }
 
+/* Based on what we learned in AbsStrictlyLarger, here's a lemma that does
+ verify. */
 lemma AbsNegLarger(x: int)
   requires x < 0
   ensures abs(x) > x
 {}
 
-/* Quantifiers */
+
+
+
+/** Quantifiers */
 
 lemma AbsLargerForAll()
   ensures forall x: int :: abs(x) >= x
@@ -81,4 +103,4 @@ lemma PosHasNeg(x: int)
   assert y < 0 && abs(y) == x;
 }
 
-/* TODO: assign such that? what would the example be? */
+// TODO: assign such that? what would the example be?
