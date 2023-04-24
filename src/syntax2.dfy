@@ -86,3 +86,101 @@ lemma SequenceAppendFact(s1: seq<int>, s2: seq<int>)
 {
   // goes through without any extra proof
 }
+
+
+/* Algebraic data types */
+
+/* Sequences are powerful and all, but eventually you'll want to define new data
+types. For that Dafny has algebraic data types which capture "products"
+(struct-like types) and "sums" (tagged unions). While we're explaining algebraic
+data types we'll take a short break from lemmas/proofs and just explain this bit
+of functional programming. */
+
+/* Let's start with a struct that has two fields, x and y: */
+datatype Point = PointCtor(x: int, y: int)
+
+/* We've called the type `Point` and its constructor `PointCtor`. It's common
+and allowed to give these the same name, since Dafny can distinguish whether we
+want the type or the function from context:
+
+   datatype Point = Point(x: int, y: int)
+ */
+
+function SquaredDistance(p: Point): int {
+  // the main thing we do with a struct is to get its fields
+  p.x * p.x + p.y * p.y
+}
+
+// Here's an example of constructing a Point:
+const Origin: Point := PointCtor(0, 0);
+
+/* Next, a datatype can have several "variants" which are mutually exclusive. In
+the simplest case, this produces an enum: */
+datatype DayOfWeek = Sunday | Saturday | Monday | Tuesday | Wednesday | Thursday | Friday
+
+predicate IsWeekend(w: DayOfWeek) {
+  match w {
+    case Sunday => true
+    case Saturday => true
+    case _ => false
+  }
+}
+
+datatype DnaBase = Cytosine | Guanine | Adenine | Thymine
+
+function PairedBase(b: DnaBase): DnaBase {
+  match b {
+    case Cytosine => Guanine
+    case Guanine => Cytosine
+    case Adenine => Thymine
+    case Thymine => Adenine
+    // This list is exhaustive, which is checked by Dafny.
+    //
+    // If we discovered a new base and added it to the list, this would guide us
+    // in updating all of our code. However, it would be not be so easy to
+    // update our understand of genetics in that case.
+  }
+}
+
+// new feature: a type synonym is simply a shorthand for an existing type
+type Strand = seq<DnaBase>
+
+// can these two strands be paired in one DNA molecule?
+predicate PairedStrands(s1: Strand, s2: Strand) {
+  // New feature: Dafny has a prefix-and syntax (borrowed from TLA+). This is //
+  // really convenient for writing a list of conjuncts in a symmetric way where
+  // they can be re-ordered or added/removed.
+  && |s1| == |s2|
+  // precondition checking is still at work here! the first conjunct is needed
+  // to guarantee that `s2[i]` is in-bounds here
+  && forall i | 0 <= i < |s1| :: s2[i] == PairedBase(s1[i])
+}
+
+/* The variants of a datatype can also have fields, combining the features of
+structs and tagged unions: */
+
+datatype MilkType =
+  // fun fact: nobody actually likes skim milk
+  // | Skim
+  | Whole
+  | Oat
+  | Almond
+
+datatype CoffeeRecipe =
+  | Drip(oz: nat, room_for_milk: bool)
+  | Espresso(double: bool)
+  | Latte(milk_type: MilkType)
+  // a very incomplete list :)
+
+// How much milk will be in my coffee drink?
+function MilkOz(coffee: CoffeeRecipe): nat {
+  match coffee {
+    // New feature: we can put an underscore for fields that aren't needed in
+    // some "match arm". We can also name a field and refer to it on the right side
+    // (notice that this name also doesn't have to match the name in the datatype).
+    case Drip(_, milk) => if milk then 1 else 0
+    case Espresso(_) => 0
+    // standard-sized latte
+    case Latte(_) => 8
+  }
+}
