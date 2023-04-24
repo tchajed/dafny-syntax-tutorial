@@ -46,8 +46,8 @@ lemma AbsLarger(x: int)
   ensures abs(x) >= x
 {}
 
-/* this property isn't true */
-lemma AbsStrictlyLarger(x: int)
+/* This property isn't true, but its proof and Dafny's reported errors will be instructive. */
+lemma AbsStrictlyLarger_attempt(x: int)
   ensures abs(x) > x
 {
   // we can invoke the already-proven lemma like this - but it doesn't actually
@@ -63,8 +63,8 @@ lemma AbsStrictlyLarger(x: int)
   }
 }
 
-/* Based on what we learned in AbsStrictlyLarger, here's a lemma that does
- verify. */
+/* Based on what we learned in the proof of AbsStrictlyLarger, here's a lemma
+ that does verify. */
 lemma AbsNegLarger(x: int)
   requires x < 0
   ensures abs(x) > x
@@ -75,21 +75,36 @@ lemma AbsNegLarger(x: int)
 
 /** Quantifiers */
 
+/* Dafny has a `forall` logical expression that can be used in assertions, with
+the expected meaning. It can prove such assertions automatically in many cases:
+*/
+
+lemma ForallAssertionExamples()
+{
+  assert forall x: int :: x + 1 > x;
+  assert forall x: int, y: int :: x + y == y + x;
+  assert forall b: bool :: b || !b;
+}
+
+/* Here's an example of proving a forall: */
+
 lemma AbsLargerForAll()
   ensures forall x: int :: abs(x) >= x
 {
-  // new syntax: forall statement
+  /* This is a bit of new syntax: a _forall statement_ allows us to help Dafny
+  with a proof of `forall x` by talking about an individual x */
   forall x: int
     ensures abs(x) >= x
   {
-    // this statement allows us to refer to x when proving a forall, which means
-    // we can call lemmas, do `if` case splits, etc.
+    // Within the body of a forall statement, the proof can refer to `x` when
+    // proving the ensures clause, which means // we can call lemmas, do `if` case
+    // splits, etc.
     AbsLarger(x);
   }
 }
 
 /* This lemma shows, in a roundabout way, that positive numbers have a negative
- * with the same absolute value. */
+   with the same absolute value. */
 lemma PosHasNeg(x: int)
   requires x > 0
   ensures exists y :: y < 0 && abs(y) == x
