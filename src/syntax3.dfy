@@ -1,5 +1,6 @@
 /*
 Outline:
+- recursion
 - opacity
 - assign-such-that
 - bisection debugging

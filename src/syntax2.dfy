@@ -2,7 +2,6 @@
 
 - sequences
 - algebraic data types
-- recursion
 */
 
 /* In order to write proofs about interesting systems and protocols, we first
@@ -168,7 +167,7 @@ datatype MilkType =
 
 datatype CoffeeRecipe =
   | Drip(oz: nat, room_for_milk: bool)
-  | Espresso(double: bool)
+  | Espresso(double_shot: bool)
   | Latte(milk_type: MilkType)
   // a very incomplete list :)
 
@@ -182,5 +181,60 @@ function MilkOz(coffee: CoffeeRecipe): nat {
     case Espresso(_) => 0
     // standard-sized latte
     case Latte(_) => 8
+  }
+}
+
+/* Below we illustrate some reasoning about data types. */
+
+lemma VariantsDiffer() {
+  assert Cytosine != Guanine;
+}
+
+function MatchesExhaustive(w: DayOfWeek): DayOfWeek {
+  // error says which cases we're missing (or we could have supplied a default case)
+  match w {
+    case Sunday => Monday
+    case Monday => Tuesday
+    case Tuesday => Wednesday
+  }
+}
+
+predicate MilkDrink(coffee: CoffeeRecipe) {
+  match coffee {
+    case Latte(_) => false
+      // this is intentionally wrong to illustrate something
+    case _ => true
+  }
+}
+
+lemma MilkDrink_spec_v1(coffee: CoffeeRecipe)
+  ensures MilkDrink(coffee) <==> (MilkOz(coffee) == 0)
+{
+  // match statement are also how we prove involving variants
+  match coffee {
+    case Latte(milk) => {}
+    case Espresso(drip) => {}
+    case Drip(oz, milk) => {
+      // the error poinpoints the error to this case
+    }
+  }
+}
+
+lemma MilkDrink_spec_v2(coffee: CoffeeRecipe)
+  ensures MilkDrink(coffee) <==> (MilkOz(coffee) == 0)
+{
+  // match statement are also how we prove involving variants
+  match coffee {
+    case Latte(milk) => {}
+    case Espresso(drip) => {}
+    case Drip(oz, milk) => {
+      if milk {
+        // New feature (assume): we can put this statement in to (temporarily!)
+        // ignore this case while we figure other things out. For this theorem,
+        // the proof goes through except for this case, which turns out to be
+        // because `MilkDrink` has a bug according to this spec.
+        assume(false);
+      }
+    }
   }
 }
