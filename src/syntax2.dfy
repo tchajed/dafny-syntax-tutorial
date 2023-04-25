@@ -1,7 +1,8 @@
-/* Outline:
+/* More interesting data to reason about */
 
+/* Outline:
 - sequences
-- algebraic data types
+- algebraic data types (user-defined data)
 */
 
 /* In order to write proofs about interesting systems and protocols, we first
@@ -9,6 +10,7 @@ need some way of modeling the state of those systems and protocols. We'll
 explore Dafy's built-in sequence type as well as algebraic data types, its core
 way of creating user-defined types.
 
+/*** Sequences ***/
 
 These data types are very similar to data structures, but will be purely
 mathematical. We'll start with the sequence type `seq<T>`. The `T` in angle
@@ -87,7 +89,7 @@ lemma SequenceAppendFact(s1: seq<int>, s2: seq<int>)
 }
 
 
-/* Algebraic data types */
+/*** Algebraic data types ***/
 
 /* Sequences are powerful and all, but eventually you'll want to define new data
 types. For that Dafny has algebraic data types which capture "products"
@@ -150,8 +152,8 @@ predicate PairedStrands(s1: Strand, s2: Strand) {
   // really convenient for writing a list of conjuncts in a symmetric way where
   // they can be re-ordered or added/removed.
   && |s1| == |s2|
-  // precondition checking is still at work here! the first conjunct is needed
-  // to guarantee that `s2[i]` is in-bounds here
+     // precondition checking is still at work here! the first conjunct is needed
+     // to guarantee that `s2[i]` is in-bounds here
   && forall i | 0 <= i < |s1| :: s2[i] == PairedBase(s1[i])
 }
 
@@ -159,7 +161,7 @@ predicate PairedStrands(s1: Strand, s2: Strand) {
 structs and tagged unions: */
 
 datatype MilkType =
-  // fun fact: nobody actually likes skim milk
+    // fun fact: nobody actually likes skim milk
   // | Skim
   | Whole
   | Oat
@@ -169,7 +171,7 @@ datatype CoffeeRecipe =
   | Drip(oz: nat, room_for_milk: bool)
   | Espresso(double_shot: bool)
   | Latte(milk_type: MilkType)
-  // a very incomplete list :)
+    // a very incomplete list :)
 
 // How much milk will be in my coffee drink?
 function MilkOz(coffee: CoffeeRecipe): nat {
@@ -202,7 +204,7 @@ function MatchesExhaustive(w: DayOfWeek): DayOfWeek {
 predicate MilkDrink(coffee: CoffeeRecipe) {
   match coffee {
     case Latte(_) => false
-      // this is intentionally wrong to illustrate something
+    // this is intentionally wrong to illustrate something
     case _ => true
   }
 }

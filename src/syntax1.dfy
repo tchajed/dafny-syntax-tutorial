@@ -1,4 +1,12 @@
-/** Mathematical assertions */
+/* Mathematical reasoning in Dafny */
+
+/* Outline:
+- Assertion
+- Functions
+- Lemmas
+*/
+
+/** Mathematical assertions **/
 
 /* A lemma can contain assertions. Unlike programming assertions, Dafny will
 statically check each assertion and report an error if it cannot prove it. This
@@ -24,7 +32,7 @@ lemma BooleanFacts() {
 
 
 
-/** Functions */
+/*** Functions ***/
 
 /* A Dafny `function` is a mathematical function: it is always deterministic,
 and is written without mutable variables or data structures. Functions are one
@@ -32,21 +40,40 @@ way to build interesting objects to prove things about in Dafy. In the next
 lecture we'll see datatypes (both built-in and user-defined) which will give us
 a lot more to play with. */
 
+function Enlargen(x: int): int {
+  2 * x + 5
+}
+
+function IsLarge(x: int): bool {
+  x > 1000
+}
+
+function LocalVars(b: bool, i1: int, i2: int): bool {
+  // we can create (immutable) local variables to break up large function
+  // definitions
+  var larger := i1 > i2;
+  !b && larger
+}
+
 function abs(x: int): int {
   /* if is an _expression_ in Dafny, not a _statement_ */
   if x < 0 then -x else x
 }
 
-/* We can prove things about functions using lemmas.
+/*** Lemmas ***/
 
-   This lemma has a parameter. When we use the lemma, that parameter is just
-   like a function argument: we'll call AbsLarger on some specific x.
- */
+/* We can prove things about functions using lemmas. A lemma has parameters, an
+ * optional _requires_ clause (its precondition) and an _ensures_ clause (its
+ * postcondition). */
+
+// This lemma has a parameter. When we use the lemma, that parameter is just
+// like a function argument: we'll call `AbsLarger` on some specific x.
 lemma AbsLarger(x: int)
   ensures abs(x) >= x
 {}
 
-/* This property isn't true, but its proof and Dafny's reported errors will be instructive. */
+// This lemma isn't true, but its proof and Dafny's reported errors will be
+// instructive.
 lemma AbsStrictlyLarger_attempt(x: int)
   ensures abs(x) > x
 {
@@ -65,19 +92,23 @@ lemma AbsStrictlyLarger_attempt(x: int)
 
 /* Based on what we learned in the proof of AbsStrictlyLarger, here's a lemma
  that does verify. */
+
 lemma AbsNegLarger(x: int)
   requires x < 0
   ensures abs(x) > x
 {}
 
+/* The body of a lemma is only used to prove the postcondition; outside of the
+ * body, the only thing Dafny will use about a lemma (for example, when it is
+ * called) is its precondition and postcondition. */
 
 
 
-/** Quantifiers */
+/*** Quantifiers ***/
 
 /* Dafny has a `forall` logical expression that can be used in assertions, with
-the expected meaning. It can prove such assertions automatically in many cases:
-*/
+ * the expected meaning. It can prove such assertions automatically in many
+ * cases: */
 
 lemma ForallAssertionExamples()
 {
@@ -92,7 +123,7 @@ lemma AbsLargerForAll()
   ensures forall x: int :: abs(x) >= x
 {
   /* This is a bit of new syntax: a _forall statement_ allows us to help Dafny
-  with a proof of `forall x` by talking about an individual x */
+   * with a proof of `forall x` by talking about an individual x */
   forall x: int
     ensures abs(x) >= x
   {
@@ -103,8 +134,10 @@ lemma AbsLargerForAll()
   }
 }
 
-/* This lemma shows, in a roundabout way, that positive numbers have a negative
-   with the same absolute value. */
+/* Dafny also has an `exists` quantifier. */
+
+// This lemma shows, in a roundabout way, that positive numbers have a negative
+// with the same absolute value.
 lemma PosHasNeg(x: int)
   requires x > 0
   ensures exists y :: y < 0 && abs(y) == x
@@ -113,7 +146,6 @@ lemma PosHasNeg(x: int)
   // exists. In this case it's pretty simple to see that the y that exists is
   // -x.
   var y := -x;
-  // This assertion nudges Dafny along to use y to prove the postcondition. Not
-  // all of this is necessary but it's good practice.
+  // This assertion nudges Dafny along to use y to prove the postcondition.
   assert y < 0 && abs(y) == x;
 }

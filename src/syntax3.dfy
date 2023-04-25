@@ -1,12 +1,13 @@
-/* This lecture covers some advanced features. They aren't really related to each other.
+/* This lecture covers some advanced features. They aren't really related to each other. */
 
+/* Outline:
 - Opacity and revealing
 - Recursive functions and lemmas
-- assign-such-that
+- TODO: assign-such-that
 */
 
 
-/* **Opacity** */
+/*** Opacity ***/
 
 /* Sometimes verification doesn't work or is too slow, especially when many
  * `forall` expressions are involved. One way to make it faster and more
@@ -60,7 +61,8 @@ lemma SevenIsGood()
 }
 
 
-/* **Recursion** */
+
+/*** Recursion ***/
 
 /* Dafny supports recursive functions and lemmas. The one caveat is that we need
  * to prove that they terminate. */
@@ -106,6 +108,7 @@ lemma {:induction false} FibonacciGreater(n: nat)
   } else {
     FibonacciGreater(n-1);
     FibonacciGreater(n-2);
+
     // What we actually know is that fibonacci(n) >= n-1 + n-2 = 2*n-3.
     assert fibonacci(n) >= n-1 + n-2;
 
