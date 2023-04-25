@@ -210,12 +210,12 @@ predicate MilkDrink(coffee: CoffeeRecipe) {
 lemma MilkDrink_spec_v1(coffee: CoffeeRecipe)
   ensures MilkDrink(coffee) <==> (MilkOz(coffee) == 0)
 {
-  // match statement are also how we prove involving variants
+  // Match statements are also how we do proofs involving variants
   match coffee {
     case Latte(milk) => {}
     case Espresso(drip) => {}
     case Drip(oz, milk) => {
-      // the error poinpoints the error to this case
+      // the error message pinpoints this case
     }
   }
 }
@@ -223,7 +223,6 @@ lemma MilkDrink_spec_v1(coffee: CoffeeRecipe)
 lemma MilkDrink_spec_v2(coffee: CoffeeRecipe)
   ensures MilkDrink(coffee) <==> (MilkOz(coffee) == 0)
 {
-  // match statement are also how we prove involving variants
   match coffee {
     case Latte(milk) => {}
     case Espresso(drip) => {}
