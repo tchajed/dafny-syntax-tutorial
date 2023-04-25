@@ -117,5 +117,3 @@ lemma PosHasNeg(x: int)
   // all of this is necessary but it's good practice.
   assert y < 0 && abs(y) == x;
 }
-
-// TODO: assign such that? what would the example be?
