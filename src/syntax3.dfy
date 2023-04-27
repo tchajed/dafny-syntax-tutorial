@@ -67,6 +67,8 @@ lemma SevenIsGood()
 /* Dafny supports recursive functions and lemmas. The one caveat is that we need
  * to prove that they terminate. */
 
+// The classic fibonacci function, defined recursively. We've chosen that
+// fibonacci(0) == fibonacci(1) == 1 for the base cases.
 function fibonacci(n: nat): nat
   // `decreases n` says that we promise to call `fibonacci` recursively only on
   // arguments (strictly) smaller than `n`. Because `n` can only go down to 0,
@@ -86,11 +88,10 @@ lemma Fibonacci_examples()
 }
 
 /* We can prove properties about fibonacci using induction. It turns out
- * induction is the same thing as a recursive lemma (!), and that's exactly how
- * Dafny supports it. */
+ * induction is the same thing as a recursive lemma (this is surprising!), and
+ * that's exactly how Dafny supports it. */
 
-/* We'll start with this arbitrary property - the nth fibonacci number is at
- * least n. */
+/* We'll start with this property - the nth fibonacci number is at least n. */
 
 // You can ignore the {:induction false} - it disables some automation in Dafny
 // that makes it harder to explain what's going on

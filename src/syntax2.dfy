@@ -44,9 +44,9 @@ lemma SequenceOperations()
 
 function SeqGet(s: seq<int>, i: nat): int
   // New feature (function preconditions): functions can have _requires_
-  // clauses, also called // // _preconditions_. Dafny will statically check  that
-  // the preconditions hold (in // the same way as assertions) wherever a call to
-  // the function appears.
+  // clauses, also called _preconditions_. Dafny will statically check  that the
+  // preconditions hold (in the same way as assertions) wherever a call to the
+  // function appears.
   //
   // This particular precondition requires that the index is in-bounds. The fact
   // that `i` is of type `nat` already assures that it is non-negative.
