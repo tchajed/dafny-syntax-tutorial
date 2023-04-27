@@ -93,7 +93,7 @@ lemma Fibonacci_examples()
  * least n. */
 
 // You can ignore the {:induction false} - it disables some automation in Dafny
-// that obscures what's going on.
+// that makes it harder to explain what's going on
 lemma {:induction false} FibonacciGreater(n: nat)
   // Just like the function, we'll need to call this lemma recursively only on
   // smaller `n`. It's easier to see why this is important - if we didn't, then
@@ -106,23 +106,29 @@ lemma {:induction false} FibonacciGreater(n: nat)
   if n <= 1 {
     // the base cases are easy
   } else {
+    // this is the inductive step: we can assume FibonacciGreater holds for
+    // smaller values of n. The fact that we're always decreasing n is what
+    // makes this ok.
     FibonacciGreater(n-1);
     FibonacciGreater(n-2);
 
-    // What we actually know is that fibonacci(n) >= n-1 + n-2 = 2*n-3.
+    // What we know from the inductive hypotheses is this:
     assert fibonacci(n) >= n-1 + n-2;
+    assert n-1 + n-2 == 2*n - 3;
 
-    // We need this expression to be at least n, but that isn't true for n=2. In
-    // that case the postcondition does hold if we just manually compute
-    // fibonacci(2), and for higher n we can use induction.
+    // We need this expression `2*n - 3` to be at least n, but that isn't true
+    // for n=2. In that case the postcondition does hold if we just manually
+    // compute fibonacci(2).
     if n == 2 {
       assert fibonacci(n) == 2;
       assert fibonacci(n) >= n;
     } else {
-      assert 2*n-3 >= n;
+      // this uses the inductive hypotheses above
+      assert fibonacci(n) >= n;
     }
 
     // (If you remove the entire `if` statement above you'll actually find Dafny
-    // can do all of that reasoning automatically.)
+    // can do all of that reasoning automatically; only the calls to
+    // FibonacciGreater are required.)
   }
 }
