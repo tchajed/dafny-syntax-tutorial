@@ -67,13 +67,13 @@ lemma CheckedPreconditions(s: seq<int>, i: nat)
   // for sequence indexing.
   //
   // We'd get the same error in an ensures clause or function definition.
-  requires s[i] > 0
+  requires s[i] > 0 // error: index out of range
 {}
 
 lemma CheckedFunctionPreconditions(s: seq<int>, i: nat)
   // almost same as above, but notice that the error specifically points to the
   // `SeqGet` precondition
-  requires SeqGet(s, i) > 0
+  requires SeqGet(s, i) > 0 // error: function precondition might not hold
 {}
 
 lemma SequenceAppendFact(s1: seq<int>, s2: seq<int>)
@@ -198,6 +198,10 @@ function MatchesExhaustive(w: DayOfWeek): DayOfWeek {
     case Sunday => Monday
     case Monday => Tuesday
     case Tuesday => Wednesday
+    case Wednesday => Thursday
+    case Thursday => Friday
+    // error: missing case in match expression: Saturday
+    // error: missing case in match expression: Friday
   }
 }
 
@@ -216,7 +220,7 @@ lemma MilkDrink_spec_v1(coffee: CoffeeRecipe)
   match coffee {
     case Latte(milk) => {}
     case Espresso(drip) => {}
-    case Drip(oz, milk) => {
+    case Drip(oz, milk) => { // error: A postcondition might not hold on this return path
       // the error message pinpoints this case
     }
   }
@@ -234,7 +238,7 @@ lemma MilkDrink_spec_v2(coffee: CoffeeRecipe)
         // ignore this case while we figure other things out. For this theorem,
         // the proof goes through except for this case, which turns out to be
         // because `MilkDrink` has a bug according to this spec.
-        assume(false);
+        assume false;
       }
     }
   }

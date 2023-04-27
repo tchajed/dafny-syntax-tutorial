@@ -17,7 +17,7 @@ lemma SomeAssertions() {
   assert 2 + 2 == 4;
   assert 1 < 2;
   // this one is wrong
-  assert -3*-2 == -6;
+  assert -3*-2 == -6; // error: assertion might not hold
   assert 1 + 2*3 == 7;
 }
 
@@ -84,7 +84,7 @@ lemma AbsStrictlyLarger_attempt(x: int)
   // an if statement in imperative code.
   if x < 0 {
     // there's no error here! the postcondition actually does hold on this path
-  } else {
+  } else { // error: a postcondition might not hold on this return path
     // But here, if we think about it, we realize abs(x) == x.
     assert abs(x) == x;
   }
