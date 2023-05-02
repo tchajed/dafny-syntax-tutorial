@@ -54,6 +54,8 @@ lemma square_monotonic(i: nat, j: nat)
   assert j * j == (i + k) * (i + k);
 }
 
+// An intermediate spec for what HasDivisorAbove returns, expressed using an
+// exists. This just explains what the recursion is doing.
 lemma HasDivisorAbove_ok(n: nat, i: nat)
   decreases n - i
   requires i > 0
@@ -73,6 +75,7 @@ lemma HasDivisorAbove_ok(n: nat, i: nat)
   }
 }
 
+// an intermediate lemma about non-linear arithmetic
 lemma sum_mod(n: nat, k: nat)
   requires k > 0
   requires n % k == 0
@@ -84,6 +87,7 @@ lemma sum_mod(n: nat, k: nat)
   assert (n + k) == (n/k + 1) * k;
 }
 
+// an intermediate lemma about non-linear arithmetic
 lemma mul_mod_0(n: nat, k: nat)
   requires k > 0
   ensures (n * k) % k == 0
@@ -119,8 +123,9 @@ lemma IsPrime_ok(n: nat)
   }
   HasDivisorAbove_ok(n, 2);
 
-  // this case is easy: the divisor proves n is not prime in both IsPrime and IsPrimeSpec
   if HasDivisorAbove(n, 2) {
+    // this case is easy: the divisor proves n is not prime in both IsPrime and
+    // IsPrimeSpec
     assert IsPrime(n) == IsPrimeSpec(n) == false;
     return;
   }
@@ -137,11 +142,14 @@ lemma IsPrime_ok(n: nat)
   // consequences of !IsPrimeSpec(n)
   var j: nat :| 2 <= j < n && n % j == 0;
   if j * j < n { return; }
-  // this is the tricky case: we need a contradiction if j is a divisor that's
-  // larger than sqrt(n), because naively it would appear
-  // HasDivisorAbove(n, 2) wouldn't find it
+
+  // This is the tricky case: we need a contradiction if j is a divisor that's
+  // larger than sqrt(n), because naively it would appear HasDivisorAbove(n, 2)
+  // wouldn't find it. OtherDivisor gives us that divisor.
 
   assert j * j >= n;
   var k := OtherDivisor(n, j);
   assert n % k == 0;
+  // we reach a contradiction with !HasDivisorAbove(n, 2)
+  assert false;
 }
