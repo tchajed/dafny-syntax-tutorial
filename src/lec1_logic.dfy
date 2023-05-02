@@ -2,7 +2,7 @@
 
 /*** Mathematical assertions ***/
 
-/* The first bit of Dafny we introduce is the lemma and assertions. A lemma is
+/* The first bit of Dafny we introduce are lemmas and assertions. A lemma is
  * like a method or procedure in other languages. Unlike in other languages,
  * Dafny will statically check each assertion in a lemma and report an error if
  * it cannot prove it. This is similar to how the compiler checks your types and
@@ -16,7 +16,8 @@ lemma SomeAssertions() {
   assert 1 + 2*3 == 7;
 }
 
-/* Here are a few more built-in Dafny operators, which are used for stating logical facts: */
+/* Here are a few more built-in Dafny operators, which are used for stating
+ * logical facts: */
 
 lemma LogicalOperators() {
   assert true && (true || false);
@@ -58,15 +59,15 @@ predicate IsSmall(x: int) {
 }
 
 predicate LocalVars(b: bool, i1: int, i2: int) {
-  // we can create (immutable) local variables to break up large function
-  // definitions
+  // New feature (function local variables): we can create (immutable) local
+  // variables to break up large function definitions
   var larger := i1 > i2;
   !b && larger
 }
 
 function abs(x: int): int {
-  // In a function, `if` is an _expression_ in Dafny. We'll see `if`
-  // _statements_ in lemmas later.
+  // New feature (if expression): in a function, `if` is an _expression_ in
+  // Dafny. We'll see `if` _statements_ in lemmas later.
   if x < 0 then -x else x
 }
 
@@ -92,8 +93,9 @@ lemma AbsStrictlyLarger_attempt(x: int)
   // we can invoke the already-proven lemma like this - but it doesn't actually
   // help prove the postcondition in this case
   AbsLarger(x);
-  // Next we could try splitting the proof into two cases, which looks just like
-  // an if statement in imperative code.
+  // New feature (lemma if statement): to split a proof into cases, we can use
+  // an _if statement_, which looks just like an imperative `if` statement in many
+  // other languages.
   if x < 0 {
     // there's no error here! the postcondition actually does hold on this path
   } else { // error: a postcondition might not hold on this return path
