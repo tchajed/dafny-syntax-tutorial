@@ -50,9 +50,9 @@ function IsLarge(x: int): bool {
   x > 1000
 }
 
-// New syntax (predicate): `predicate` is a shorthand for a function that returns a boolean.
-// Functions that return a boolean are extremely common in verification since
-// they express logical predicates, hence the special syntax.
+// New feature (predicate): `predicate` is a shorthand for a function that
+// returns a boolean.  Functions that return a boolean are extremely common in
+// verification since they express logical predicates, hence the special syntax.
 predicate IsSmall(x: int) {
   !IsLarge(x)
 }
@@ -140,7 +140,7 @@ lemma ForallAssertionExamples()
 lemma AbsLargerForAll()
   ensures forall x: int :: abs(x) >= x
 {
-  // New syntax (forall statement): a _forall statement_ allows us to help Dafny with a proof of
+  // New feature (forall statement): a _forall statement_ allows us to help Dafny with a proof of
   // `forall x :: ...` by talking about an individual `x` */
   forall x: int
     ensures abs(x) >= x

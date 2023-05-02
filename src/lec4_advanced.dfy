@@ -3,7 +3,7 @@
 /* Outline:
 - Opacity and revealing
 - Recursive functions and lemmas
-- assign-such-that
+- Assign-such-that
 */
 
 
@@ -158,7 +158,7 @@ lemma PreviousFromC(s: State, s': State)
   requires Next(s, s') && s' == C
   ensures s == B || s == C
 {
-  // New syntax (assign such that): we can assign a variable using the syntax
+  // New feature (assign such that): we can assign a variable using the syntax
   // `var x:T :| p(x)` to get a (non-deterministic) value of type `T` that
   // satisfies `p(x)`. Dafny will first check that at least one such value
   // exists. As usual for `var` declarations the type `T` is optional if it can
