@@ -1,4 +1,4 @@
-/* More interesting data to reason about */
+/* More interesting data to reason about: sequences. */
 
 /* Outline:
 - sequences
@@ -8,18 +8,18 @@
 /* In order to write proofs about interesting systems and protocols, we first
 need some way of modeling the state of those systems and protocols. We'll
 explore Dafy's built-in sequence type as well as algebraic data types, its core
-way of creating user-defined types.
+way of creating user-defined types. */
 
 /*** Sequences ***/
 
-These data types are very similar to data structures, but will be purely
-mathematical. We'll start with the sequence type `seq<T>`. The `T` in angle
-brackets is a _type parameter_, needed because sequences can hold values of any
-type. A sequence is related to data structures you're familiar with like linked
-lists or arrays/vectors (the terminology depends on the programming language). A
-sequence is the mathematical essence of the state of a list/vector/array without
-the implementation details.
-*/
+/* These data types are very similar to data structures, but will be purely
+ * mathematical. We'll start with the sequence type `seq<T>`. The `T` in angle
+ * brackets is a _type parameter_, needed because sequences can hold values of
+ * any type. A sequence is related to data structures you're familiar with like
+ * linked lists or arrays/vectors (the terminology depends on the programming
+ * language). A sequence is the mathematical essence of the state of a
+ * list/vector/array without the implementation details.
+ */
 
 lemma SequenceOperations()
 {
@@ -77,10 +77,10 @@ lemma CheckedFunctionPreconditions(s: seq<int>, i: nat)
 {}
 
 lemma SequenceAppendFact(s1: seq<int>, s2: seq<int>)
-  // New syntax (forall where conditions): notice the new pipe symbol after the `i`. The
-  // general syntax is of the form `forall x | p(x) :: q(x)`; it means the same //
-  // thing as `forall x :: p(x) ==> q(x)` but can be easier to read. You might read this
-  // as "for all x where p(x), q(x)".
+  // New syntax (forall where clause): notice the new pipe symbol after the `i`.
+  // The general syntax is of the form `forall x | p(x) :: q(x)`; it means the
+  // same thing as `forall x :: p(x) ==> q(x)` but can be easier to read. You
+  // might read this as "for all x where p(x), q(x)".
   //
   // We're also leaving off the type of `i` because Dafny can infer that it's an `int`.
   ensures forall i | |s1| <= i < |s1| + |s2| :: (s1 + s2)[i] == s2[i - |s1|]

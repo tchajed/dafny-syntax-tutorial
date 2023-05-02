@@ -3,7 +3,7 @@
 /* Outline:
 - Opacity and revealing
 - Recursive functions and lemmas
-- TODO: assign-such-that
+- assign-such-that
 */
 
 
@@ -131,5 +131,46 @@ lemma {:induction false} FibonacciGreater(n: nat)
     // (If you remove the entire `if` statement above you'll actually find Dafny
     // can do all of that reasoning automatically; only the calls to
     // FibonacciGreater are required.)
+  }
+}
+
+/* There's one final bit of syntax that will come in handy later. It will be used
+ * for something we call "Jay Normal Form" - you don't need to understand it now,
+ * but it's a style where if we have a non-deterministic relation r(x, y), we
+ * capture the non-determinism in a new datatype Step and write `r` as exists `z:
+ * Step :: r'(x, y, z)`, where `r'` is now a deterministic function from (x, z)
+ * to y. */
+
+datatype State = A | B | C
+datatype Step = AtoB | BtoC | Stutter
+predicate NextStep(s: State, s': State, step: Step) {
+  match step {
+    case AtoB => s == A && s' == B
+    case BtoC => s == B && s' == C
+    case Stutter => s' == s
+  }
+}
+predicate Next(s: State, s': State) {
+  exists step:Step :: NextStep(s, s', step)
+}
+
+lemma PreviousFromC(s: State, s': State)
+  requires Next(s, s') && s' == C
+  ensures s == B || s == C
+{
+  // New syntax (assign such that): we can assign a variable using the syntax
+  // `var x:T :| p(x)` to get a (non-deterministic) value of type `T` that
+  // satisfies `p(x)`. Dafny will first check that at least one such value
+  // exists. As usual for `var` declarations the type `T` is optional if it can
+  // be inferred (from the type of `p` for example).
+  var step :| NextStep(s, s', step); // works because Next(s, s') guarantees some step exists
+
+  // This is useful for similar reasons to why `forall` statement is
+  // useful: it gives a name to that `x` which we can then use for the remainder
+  // of the proof.
+  match step {
+    case AtoB => assert false; // s' is C
+    case BtoC => {}
+    case Stutter => {}
   }
 }
