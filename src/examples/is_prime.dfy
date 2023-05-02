@@ -28,21 +28,20 @@ lemma square_monotonic(i: nat, j: nat)
   assert j * j == (i + k) * (i + k);
 }
 
-lemma square_monotonic_auto()
-  ensures forall i, j | 0 < i < j :: i * i < j * j
-{
-  forall i, j | 0 < i < j ensures i * i < j * j {
-    square_monotonic(i, j);
-  }
-}
-
 lemma HasDivisorAbove_ok(n: nat, i: nat)
   decreases n - i
   requires i > 0
-  ensures HasDivisorAbove(n, i) == exists j: nat :: i <= j && j * j <= n && n % j == 0
+  ensures HasDivisorAbove(n, i) <==>
+          exists j :: && i <= j
+                      && j * j <= n
+                      && n % j == 0
 {
   if i * i > n {
-    square_monotonic_auto();
+    assert !HasDivisorAbove(n, i); // by definition
+    forall j | i < j ensures j * j > n
+    {
+      square_monotonic(i, j);
+    }
   } else {
     HasDivisorAbove_ok(n, i + 1);
   }
