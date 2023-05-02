@@ -1,3 +1,31 @@
+/* The specification for IsPrime. We define 0 and 1 to not be prime here. */
+
+predicate IsPrimeSpec(n: nat) {
+  // we define 0 and 1 to not be prime
+  n >= 2 &&
+  forall i: nat | 2 <= i < n ::
+    n % i != 0
+}
+
+// illustrate IsPrime on a few examples (note that the verifier is able to check
+// these only with some help to find divisors for non-prime numbers)
+lemma IsPrimeSpec_tests() {
+  assert !IsPrimeSpec(1);
+  assert IsPrimeSpec(2);
+  assert IsPrimeSpec(3);
+  assert 4 % 2 == 0;
+  assert !IsPrimeSpec(4);
+  assert 6 % 2 == 0;
+  assert !IsPrimeSpec(6);
+}
+
+/* A recursive implementation of IsPrime. The function HasDivisorAbove checks if
+ * n is divisible by something between i and sqrt(n) (see HasDivisorAbove_ok for
+ * a precise and verified statement). Note that this is a mathematical
+ * optimization: we don't need to check divisors above sqrt(n) because if such a
+ * number k divides n, then (n / k) <= sqrt(n) also divides k. A number is prime
+ * if it has no divisor, with a special case for n <= 1 to match the spec. */
+
 function
   HasDivisorAbove(n:nat, i:nat): bool
   decreases n - i
@@ -10,15 +38,13 @@ function
 
 function
   IsPrime(n: nat): bool {
-  if n <= 2 then n == 2 else
+  if n <= 1 then false else
   !HasDivisorAbove(n, 2)
 }
 
-predicate IsPrimeSpec(n: nat) {
-  n >= 2 &&
-  forall i: nat | 2 <= i < n ::
-    n % i != 0
-}
+/* We'll not prove IsPrime(n) == IsPrimeSpec(n). This will require several helper
+ * lemmas: some are due to the use of non-linear arithmetic in the optimization
+ * in HasDivisorAbove, others are to handle the recursion. */
 
 lemma square_monotonic(i: nat, j: nat)
   requires 0 < i && i < j
@@ -70,15 +96,19 @@ lemma mul_mod_0(n: nat, k: nat)
   }
 }
 
-lemma OtherDivisor(n: nat, j: nat)
+// This is the main principle for the mathematical optimization: if j is a
+// "large" divisor above sqrt(n), then there's also a "small" divisor (n/j).
+lemma OtherDivisor(n: nat, j: nat) returns (k: nat)
   requires n > 0 && j > 0
   requires j * j > n
   requires n % j == 0
-  ensures n % (n / j) == 0
-  ensures n / j <= n
+  // returns n/j so caller names this expression
+  ensures k == n / j
+  ensures n % k == 0
+  ensures k * k <= n
 {
-
-  mul_mod_0(j, n/j);
+  k := n / j;
+  mul_mod_0(j, k);
 }
 
 lemma IsPrime_ok(n: nat)
@@ -112,9 +142,6 @@ lemma IsPrime_ok(n: nat)
   // HasDivisorAbove(n, 2) wouldn't find it
 
   assert j * j >= n;
-  var k := n / j;
-  assert n == k * j == j * k;
-  assert n % k == 0 && k * k <= n by {
-    OtherDivisor(n, j);
-  }
+  var k := OtherDivisor(n, j);
+  assert n % k == 0;
 }
