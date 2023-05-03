@@ -1,6 +1,7 @@
 /* Mathematical reasoning in Dafny */
 
 /*** Mathematical assertions ***/
+// {{{
 
 /* The first bit of Dafny we introduce are lemmas and assertions. A lemma is
  * like a method or procedure in other languages. Unlike in other languages,
@@ -32,10 +33,11 @@ lemma LogicalOperators() {
   assert false <==> false;
   assert !(true <==> false);
 }
-
+// }}}
 
 
 /*** Functions ***/
+// {{{
 
 /* A Dafny `function` is a mathematical function: it is always deterministic, and
  * is written without mutable variables or data structures. Functions are one way
@@ -71,9 +73,11 @@ function abs(x: int): int {
   if x < 0 then -x else x
 }
 
+// }}}
 
 
 /*** Lemmas ***/
+// {{{
 
 /* We can prove things about functions using lemmas. A lemma has parameters, an
  * optional _requires_ clause (its precondition) and an _ensures_ clause (its
@@ -117,9 +121,10 @@ lemma AbsNegLarger(x: int)
  * code that uses the lemma). The body of a lemma is used to prove its
  * postcondition, assuming its precondition; outside of the body, Dafny will
  * ignore the body.  */
+// }}}
 
 
-
+// {{{
 /*** Quantifiers ***/
 
 /* Dafny has a `forall` logical expression that can be used in assertions, with
@@ -169,3 +174,5 @@ lemma PosHasNeg(x: int)
   // This assertion nudges Dafny along to use y to prove the postcondition.
   assert y < 0 && abs(y) == x;
 }
+
+// }}}
