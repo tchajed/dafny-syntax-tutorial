@@ -1,11 +1,12 @@
 /* More interesting data to reason about: sequences. */
 
 /* In order to write proofs about interesting systems and protocols, we first
-need some way of modeling the state of those systems and protocols. We'll
-explore Dafy's built-in sequence type as well as algebraic data types, its core
-way of creating user-defined types. */
+ * need some way of modeling the state of those systems and protocols. We'll
+ * explore Dafy's built-in sequence type as well as algebraic data types, its
+ * core way of creating user-defined types. */
 
 /*** Sequences ***/
+// {{{
 
 /* These data types are very similar to data structures, but will be purely
  * mathematical. We'll start with the sequence type `seq<T>`. The `T` in angle
@@ -15,6 +16,12 @@ way of creating user-defined types. */
  * language). A sequence is the mathematical essence of the state of a
  * list/vector/array without the implementation details.
  */
+
+lemma BasicSequences()
+{
+  var s: seq<nat> := [1, 17, 3];
+  assert s[1] == 17;
+}
 
 lemma SequenceOperations()
 {
@@ -36,6 +43,7 @@ lemma SequenceOperations()
 }
 
 /* Below we give some lemmas illustrating sequence operations. */
+// {{{
 
 function SeqGet(s: seq<int>, i: nat): int
   // New feature (function preconditions): functions can have _requires_
@@ -79,6 +87,9 @@ lemma SequenceAppendFact(s1: seq<int>, s2: seq<int>)
   //
   // We're also leaving off the type of `i` because Dafny can infer that it's an `int`.
   ensures forall i | |s1| <= i < |s1| + |s2| :: (s1 + s2)[i] == s2[i - |s1|]
-{
-  // goes through without any extra proof
+{ // goes through without any extra proof
 }
+
+// }}}
+
+// }}}
