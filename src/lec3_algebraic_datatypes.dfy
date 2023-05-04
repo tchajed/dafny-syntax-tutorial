@@ -52,6 +52,19 @@ predicate IsWeekend(w: DayOfWeek) {
   }
 }
 
+function MatchesExhaustive(w: DayOfWeek): DayOfWeek {
+  // error says which cases we're missing (or we could have supplied a default case)
+  match w {
+    case Sunday => Monday
+    case Monday => Tuesday
+    case Tuesday => Wednesday
+    case Wednesday => Thursday
+    case Thursday => Friday
+    // error: missing case in match expression: Saturday
+    // error: missing case in match expression: Friday
+  }
+}
+
 /* More functions on data types */
 
 datatype DnaBase = Cytosine | Guanine | Adenine | Thymine
@@ -76,7 +89,7 @@ type Strand = seq<DnaBase>
 
 // can these two strands be paired in one DNA molecule?
 predicate PairedStrands(s1: Strand, s2: Strand) {
-  // New feature: Dafny has a prefix-and syntax (borrowed from TLA+). This is //
+  // New feature: Dafny has a prefix-and syntax (borrowed from TLA+). This is
   // really convenient for writing a list of conjuncts in a symmetric way where
   // they can be re-ordered or added/removed.
   && |s1| == |s2|
@@ -132,19 +145,6 @@ lemma VariantsDiffer() {
   assert Sunday != Monday;
 }
 
-function MatchesExhaustive(w: DayOfWeek): DayOfWeek {
-  // error says which cases we're missing (or we could have supplied a default case)
-  match w {
-    case Sunday => Monday
-    case Monday => Tuesday
-    case Tuesday => Wednesday
-    case Wednesday => Thursday
-    case Thursday => Friday
-    // error: missing case in match expression: Saturday
-    // error: missing case in match expression: Friday
-  }
-}
-
 predicate MilkDrink(coffee: CoffeeRecipe) {
   match coffee {
     case Latte(_) => false
@@ -182,6 +182,42 @@ lemma MilkDrink_spec_v2(coffee: CoffeeRecipe)
       }
     }
   }
+}
+
+/* Discriminators and fields of variants */
+
+/* In addition to match statements, Dafny has another way to check which variant
+ * a datatype was constructed with and to access fields of datatypes with
+ * multiple variants. */
+
+// we'll use these features to make another attempt at this theorem with an
+// appropriate precondition
+lemma MilkDrink_spec_alt(coffee: CoffeeRecipe)
+  requires
+    // New feature (discriminator): coffee.Drip? is a predicate that is true if
+    // coffee was constructed with the Drip(...) variant. It's automatically
+    // defined by Dafny.
+    coffee.Drip? ==>
+      // New feature (fields of variant datatypes): Dafny allows accessing a field
+      // of a particular variant even when there are multiple variants. This field
+      // access has an implicit precondition `coffee.Drip?` - just like for
+      // accessing sequences, all uses (including in specifications) need to
+      // guarantee this precondition, which in this case comes from the
+      // `coffee.Drip? ==>`.
+      !coffee.room_for_milk
+  ensures MilkDrink(coffee) <==> (MilkOz(coffee) == 0)
+{
+  // We can use both of these new features in the proof instead of a match
+  // statement, which might be more convenient or natural in some cases
+  // (especially when building a proof incrementally it can allow checking
+  // particular cases without writing out the match statement).
+  if coffee.Latte? {
+    var typ := coffee.milk_type;
+  } else if coffee.Drip? {
+    assert !coffee.room_for_milk;
+  } else if coffee.Espresso? {}
+
+  // (the proof in this is unnecessary because the lemma is simple enough)
 }
 
 // }}}
