@@ -1,16 +1,20 @@
-/* More interesting data to reason about: algebraic data types. */
+/* More interesting data to reason about: algebraic datatypes. */
 
-/*** Algebraic data types ***/
+/*** Algebraic datatypes ***/
 
 /* Sequences are powerful and all, but eventually you'll want to define new data
- * types. For that Dafny has algebraic data types which capture "products"
+ * types. For that Dafny has algebraic datatypes which capture "products"
  * (struct-like types) and "sums" (tagged unions). These are often abbreviated to
  * "ADTs" (not to be confused with "abstract data types" which are a totally
  * different concept related to object-oriented programming; we won't generally
- * use that term). Algebraic data types are also used for programming (as opposed
+ * use that term). Algebraic datatypes are also used for programming (as opposed
  * to in the course where we'll only see them used for mathematical models), so
  * we'll take a short break and first explain them in the context of functions
  * before seeing them used in lemmas and assertions. */
+
+/*** Structs (products) ***/
+
+// {{{
 
 /* Let's start with a struct that has two fields, x and y: */
 datatype Point = PointCtor(x: int, y: int)
@@ -30,6 +34,12 @@ function SquaredDistance(p: Point): int {
 // Here's an example of constructing a Point:
 const Origin: Point := PointCtor(0, 0);
 
+// }}}
+
+/*** Variants (sums) ***/
+
+// {{{
+
 /* Next, a datatype can have several "variants" which are mutually exclusive. In
 the simplest case, this produces an enum: */
 datatype DayOfWeek = Sunday | Saturday | Monday | Tuesday | Wednesday | Thursday | Friday
@@ -42,6 +52,8 @@ predicate IsWeekend(w: DayOfWeek) {
   }
 }
 
+/* More functions on data types */
+
 datatype DnaBase = Cytosine | Guanine | Adenine | Thymine
 
 function PairedBase(b: DnaBase): DnaBase {
@@ -50,15 +62,16 @@ function PairedBase(b: DnaBase): DnaBase {
     case Guanine => Cytosine
     case Adenine => Thymine
     case Thymine => Adenine
-    // This list is exhaustive, which is checked by Dafny.
-    //
-    // If we discovered a new base and added it to the list, this would guide us
-    // in updating all of our code. However, it would be not be so easy to
-    // update our understand of genetics in that case.
+    /* This list is exhaustive, which is checked by Dafny.
+     *
+     * If we discovered a new base and added it to the list, this would guide us
+     * in updating all of our code. However, it would be not be so easy to
+     * update our understand of genetics in that case.
+     */
   }
 }
 
-// new feature: a type synonym is simply a shorthand for an existing type
+// New feature (type synonym): a type synonym is simply a shorthand for an existing type
 type Strand = seq<DnaBase>
 
 // can these two strands be paired in one DNA molecule?
@@ -72,8 +85,11 @@ predicate PairedStrands(s1: Strand, s2: Strand) {
   && forall i | 0 <= i < |s1| :: s2[i] == PairedBase(s1[i])
 }
 
-/* The variants of a datatype can also have fields, combining the features of
-structs and tagged unions: */
+// }}}
+
+/*** Combining structs and variants ***/
+
+// {{{
 
 datatype MilkType =
     // fun fact: nobody actually likes skim milk
@@ -106,11 +122,14 @@ function MilkOz(coffee: CoffeeRecipe): nat {
   }
 }
 
-/* Now that we've seen algebraic datatypes in functions, let's start using them
- * in lemmas and assertions. */
+// }}}
+
+/*** Algebraic datatypes in lemmas and assertions ***/
+
+// {{{
 
 lemma VariantsDiffer() {
-  assert Cytosine != Guanine;
+  assert Sunday != Monday;
 }
 
 function MatchesExhaustive(w: DayOfWeek): DayOfWeek {
@@ -164,3 +183,5 @@ lemma MilkDrink_spec_v2(coffee: CoffeeRecipe)
     }
   }
 }
+
+// }}}
