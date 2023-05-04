@@ -6,8 +6,9 @@
 - Assign-such-that
 */
 
-
 /*** Opacity ***/
+
+// {{{
 
 /* Sometimes verification doesn't work or is too slow, especially when many
  * `forall` expressions are involved. One way to make it faster and more
@@ -60,9 +61,12 @@ lemma SevenIsGood()
   GoodMonotonic(4, 7);
 }
 
+// }}}
 
 
 /*** Recursion ***/
+
+// {{{
 
 /* Dafny supports recursive functions and lemmas. The one caveat is that we need
  * to prove that they terminate. */
@@ -134,6 +138,12 @@ lemma {:induction false} FibonacciGreater(n: nat)
   }
 }
 
+// }}}
+
+/*** Assign-such-that ***/
+
+// {{{
+
 /* There's one final bit of syntax that will come in handy later. It will be used
  * for something we call "Jay Normal Form" - you don't need to understand it now,
  * but it's a style where if we have a non-deterministic relation r(x, y), we
@@ -174,3 +184,5 @@ lemma PreviousFromC(s: State, s': State)
     case Stutter => {}
   }
 }
+
+// }}}
