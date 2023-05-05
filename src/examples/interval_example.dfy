@@ -70,6 +70,18 @@ predicate overlap(i1: Interval, i2: Interval) {
   !empty(intersect(i1, i2))
 }
 
+lemma overlap_ok(i1: Interval, i2: Interval)
+  ensures overlap(i1, i2) <==> exists r :: contains(i1, r) && contains(i2, r)
+{
+  if overlap(i1, i2) {
+    if i1.lo >= i2.lo {
+      assert contains(i2, i1.lo);
+    } else {
+      assert contains(i1, i2.lo);
+    }
+  }
+}
+
 // We'll give this function a precondition so that it always does the right thing.
 function union(i1: Interval, i2: Interval): Interval
   requires overlap(i1, i2)
