@@ -147,14 +147,14 @@ lemma VariantsDiffer() {
 
 predicate MilkDrink(coffee: CoffeeRecipe) {
   match coffee {
-    case Latte(_) => false
+    case Latte(_) => true
     // this is intentionally wrong to illustrate something
-    case _ => true
+    case _ => false
   }
 }
 
 lemma MilkDrink_spec_v1(coffee: CoffeeRecipe)
-  ensures MilkDrink(coffee) <==> (MilkOz(coffee) == 0)
+  ensures MilkDrink(coffee) <==> (MilkOz(coffee) > 0)
 {
   // Match statements are also how we do proofs involving variants
   match coffee {
@@ -167,7 +167,7 @@ lemma MilkDrink_spec_v1(coffee: CoffeeRecipe)
 }
 
 lemma MilkDrink_spec_v2(coffee: CoffeeRecipe)
-  ensures MilkDrink(coffee) <==> (MilkOz(coffee) == 0)
+  ensures MilkDrink(coffee) <==> (MilkOz(coffee) > 0)
 {
   match coffee {
     case Latte(milk) => {}
@@ -205,7 +205,7 @@ lemma MilkDrink_spec_alt(coffee: CoffeeRecipe)
       // guarantee this precondition, which in this case comes from the
       // `coffee.Drip? ==>`.
       !coffee.room_for_milk
-  ensures MilkDrink(coffee) <==> (MilkOz(coffee) == 0)
+  ensures MilkDrink(coffee) <==> (MilkOz(coffee) > 0)
 {
   // We can use both of these new features in the proof instead of a match
   // statement, which might be more convenient or natural in some cases
