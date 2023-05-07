@@ -1,8 +1,8 @@
 /* This lecture covers some advanced features. */
 
 /* Outline:
-- Opacity and revealing
 - Recursive functions and lemmas
+- Opacity and revealing
 - Assign-such-that
 */
 
