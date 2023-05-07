@@ -102,7 +102,7 @@ lemma {:induction false} FibonacciGreater(n: nat)
  * isn't actually complicated, but using it opaquely will illustrate how the
  * mechanisms work. */
 
-opaque ghost predicate Good(n: nat) {
+opaque predicate Good(n: nat) {
   n > 3
 }
 
