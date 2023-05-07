@@ -1,68 +1,10 @@
-/* This lecture covers some advanced features. They aren't really related to each other. */
+/* This lecture covers some advanced features. */
 
 /* Outline:
 - Opacity and revealing
 - Recursive functions and lemmas
 - Assign-such-that
 */
-
-/*** Opacity ***/
-
-// {{{
-
-/* Sometimes verification doesn't work or is too slow, especially when many
- * `forall` expressions are involved. One way to make it faster and more
- * predictable is to use _opacity_, which temporarily hides the body of a
- * definition from the verification engine. With an opaque definition we can
- * write a collection of lemmas that _reveal_ the body and use it directly, but
- * thereafter use only those lemmas rather than the body directly. This can be
- * much more efficient if we only need those limited properties and not
- * everything about the body, and also because Dafny only needs to check the
- * lemmas once and then can assume them for other proofs. */
-
-
-/* We'll illustrate the mechanisms with this `Good` predicate. The predicate
- * isn't actually complicated, but using it opaquely will illustrate how the
- * mechanisms work. */
-
-opaque ghost predicate Good(n: nat) {
-  n > 3
-}
-
-lemma FourIsGood_attempt1()
-  ensures Good(4)
-{ // error: A postcondition might not hold on this return path
-  // notice that this proof doesn't go through - Dafny doesn't know anything
-  // about Good other than it is a deterministic predicate that takes a `nat`.
-}
-
-lemma FourIsGood()
-  ensures Good(4)
-{
-  // New feature (reveal statement): we can reveal the body of an opaque
-  // predicate. After that its body is available to the proof.
-  reveal Good();
-}
-
-// Here's a property `Good` satisfies which doesn't quite reveal everything
-// about it.
-lemma GoodMonotonic(n: nat, m: nat)
-  requires Good(n) && m >= n
-  ensures Good(m)
-{
-  reveal Good();
-}
-
-// Now we can prove 7 is good without knowing exactly what `Good` means.
-lemma SevenIsGood()
-  ensures Good(7)
-{
-  FourIsGood();
-  GoodMonotonic(4, 7);
-}
-
-// }}}
-
 
 /*** Recursion ***/
 
@@ -139,6 +81,65 @@ lemma {:induction false} FibonacciGreater(n: nat)
 }
 
 // }}}
+
+
+/*** Opacity ***/
+
+// {{{
+
+/* Sometimes verification doesn't work or is too slow, especially when many
+ * `forall` expressions are involved. One way to make it faster and more
+ * predictable is to use _opacity_, which temporarily hides the body of a
+ * definition from the verification engine. With an opaque definition we can
+ * write a collection of lemmas that _reveal_ the body and use it directly, but
+ * thereafter use only those lemmas rather than the body directly. This can be
+ * much more efficient if we only need those limited properties and not
+ * everything about the body, and also because Dafny only needs to check the
+ * lemmas once and then can assume them for other proofs. */
+
+
+/* We'll illustrate the mechanisms with this `Good` predicate. The predicate
+ * isn't actually complicated, but using it opaquely will illustrate how the
+ * mechanisms work. */
+
+opaque ghost predicate Good(n: nat) {
+  n > 3
+}
+
+lemma FourIsGood_attempt1()
+  ensures Good(4)
+{ // error: A postcondition might not hold on this return path
+  // notice that this proof doesn't go through - Dafny doesn't know anything
+  // about Good other than it is a deterministic predicate that takes a `nat`.
+}
+
+lemma FourIsGood()
+  ensures Good(4)
+{
+  // New feature (reveal statement): we can reveal the body of an opaque
+  // predicate. After that its body is available to the proof.
+  reveal Good();
+}
+
+// Here's a property `Good` satisfies which doesn't quite reveal everything
+// about it.
+lemma GoodMonotonic(n: nat, m: nat)
+  requires Good(n) && m >= n
+  ensures Good(m)
+{
+  reveal Good();
+}
+
+// Now we can prove 7 is good without knowing exactly what `Good` means.
+lemma SevenIsGood()
+  ensures Good(7)
+{
+  FourIsGood();
+  GoodMonotonic(4, 7);
+}
+
+// }}}
+
 
 /*** Assign-such-that ***/
 
