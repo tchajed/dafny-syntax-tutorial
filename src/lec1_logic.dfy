@@ -124,8 +124,8 @@ lemma AbsNegLarger(x: int)
 // }}}
 
 
-// {{{
 /*** Quantifiers ***/
+// {{{
 
 /* Dafny has a `forall` logical expression that can be used in assertions, with
  * the expected meaning. It can prove such assertions automatically in many
