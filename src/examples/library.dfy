@@ -46,7 +46,11 @@ ghost predicate CheckoutStep(c: Constants, v: Variables, v': Variables, step: St
   && v.WellFormed(c)
   && step.b in v.library
   && v.library[step.b].Shelf?
-  && v'.library == v.library[step.b := Patron(step.to)]
+     // New syntax (datatype update): here we define the new Variables from the old
+     // one by updating one field: v.(library := ...). This is much like a sequence
+     // update. In fact, we also introduce a map update `v.library[step.b := ...]`
+     // which works in pretty much the same way.
+  && v' == v.(library := v.library[step.b := Patron(step.to)])
 }
 
 ghost predicate ReturnStep(c: Constants, v: Variables, v': Variables, step: Step)
@@ -55,6 +59,11 @@ ghost predicate ReturnStep(c: Constants, v: Variables, v': Variables, step: Step
   && v.WellFormed(c)
   && step.b in v.library
   && v.library[step.b].Patron?
+     // Because there's only one field we could just say how it changes (unlike
+     // CheckoutStep above that uses a datatype update), but note that if we
+     // added a field the datatype update above would say other fields are
+     // unchanged whereas this predicate would say the new values are arbitrary
+     // and we would have some sneaky non-determinism outside of Step.
   && v'.library == v.library[step.b := Shelf]
 }
 
