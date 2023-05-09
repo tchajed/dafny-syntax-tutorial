@@ -59,12 +59,7 @@ ghost predicate ReturnStep(c: Constants, v: Variables, v': Variables, step: Step
   && v.WellFormed(c)
   && step.b in v.library
   && v.library[step.b].Patron?
-     // Because there's only one field we could just say how it changes (unlike
-     // CheckoutStep above that uses a datatype update), but note that if we
-     // added a field the datatype update above would say other fields are
-     // unchanged whereas this predicate would say the new values are arbitrary
-     // and we would have some sneaky non-determinism outside of Step.
-  && v'.library == v.library[step.b := Shelf]
+  && v' == v.(library := v.library[step.b := Shelf])
 }
 
 ghost predicate NextStep(c: Constants, v: Variables, v': Variables, step: Step)
