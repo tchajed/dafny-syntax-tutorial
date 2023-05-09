@@ -75,6 +75,13 @@ ghost predicate Next(c: Constants, v: Variables, v': Variables)
   exists step :: NextStep(c, v, v', step)
 }
 
+/*
+In this lemma we'll write a concrete sequence of states which forms a (short)
+execution of this state machine, and prove that it really is an execution.
+
+This can be a good sanity check on the definitions (for example, to make sure
+that it's at least possible to take every transition).
+*/
 lemma ExampleExec() {
   var c := Constants();
   var e := [
@@ -84,10 +91,11 @@ lemma ExampleExec() {
     Variables(map[Book("Snow Crash") := Shelf, Book("The Stand") := Patron("Tej")])
   ];
 
-  // we'll prove that e is a valid execution
+  // Next we'll prove that e is a valid execution.
 
   assert Init(c, e[0]);
-  // all the witnesses needed to prove this execution
+
+  // These steps will be witnesses to help prove Next between every pair of Variables.
   var steps := [
     Checkout(Book("Snow Crash"), "Jon"),
     Checkout(Book("The Stand"), "Tej"),
