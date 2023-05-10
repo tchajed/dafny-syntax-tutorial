@@ -4,6 +4,11 @@
  * properties, so it helps if you have an understanding of what the connectives
  * of logic mean and have a little fluency with manipulating them. */
 
+/* The first section of "An Introduction to Abstract Mathematics" by Neil
+ * Donaldson and Alessandra Pantano might be helpful:
+ * https://www.math.uci.edu/~ndonalds/math13/notes.pdf
+ */
+
 /* The core of logic is the _proposition_. For us, a proposition like `2 < 3` is
  * going to be a boolean, with the interpretation that the proposition is true,
  * well, if the boolean is true, and false if not. That proposition is clearly
@@ -142,6 +147,9 @@ lemma ProveFromBiconditional(p1: bool, p2: bool)
  * gradually get practice with. It can get quite complicated! */
 lemma SomeEquivalences(p1: bool, p2: bool)
   ensures ((p1 ==> p2) && p1) ==> p2
+  // !p2 ==> !p1 is called the "contrapositive" of p1 ==> p2. It has the same
+  // truth value.
+  ensures (p1 ==> p2) <==> (!p2 ==> !p1)
   ensures !(p1 ==> !p2) <==> p1 && p2
   ensures ((p1 ==> p2) && (!p1 ==> p2)) <==> p2
   // you might want to think about this one:
@@ -155,4 +163,67 @@ lemma SomeMoreEquivalences(p1: bool, p2: bool, p3: bool)
   // this is what chained implications mean
   ensures p1 ==> p2 ==> p3 <==> p1 && p2 ==> p3
   ensures p1 ==> (p2 ==> p3) <==> p1 && p2 ==> p3
+{}
+
+/* Quantifiers */
+
+/* To express and state more interesting properties, we'll need quantifiers -
+ * that is, forall and exists. Dafny supports these as a way to write
+ * propositions, and they produce a boolean value just like the other logical
+ * connectives. */
+
+lemma AdditionCommutesAsForall()
+{
+  // (ignore the warning "No terms found to trigger on")
+  assert forall n: int, m: int :: n + m == m + n;
+
+  // Just to emphasize this is a proposition (a boolean) just like everything
+  // else we've seen. The big difference is that this forall is clearly not a
+  // boolean we could evaluate in the normal sense of running it to produce true
+  // or false - nonetheless Dafny can reason about it mathematically.
+  var does_addition_commute: bool := forall n: int, m: int :: n + m == m + n;
+  assert does_addition_commute == true;
+}
+
+/* In order to illustrate some properties of forall, we'll introduce some
+ * arbitrary _predicates_ over integers to put in our examples. By not putting a
+ * body we tell Dafny to define these terms, but not to assume anything about their
+ * values except that they are deterministic. */
+predicate P(x: int)
+predicate Q(x: int)
+// This is a predicate over two integers, often called a relation. You might
+// also hear propositions, predicates, and predicates over multiple values all
+// called relations - propositions are just 0-arity and predicates are 1-arity.
+predicate R(x: int, y: int)
+
+/* One operation you'll eventually want some fluency in is the ability to negate
+ * logical expressions. Let's go through the rules. */
+lemma SimplifyingNegations(p: bool, q: bool)
+  ensures !(p && q) <==> !p || !q
+  ensures !(p || q) <==> !p && !q
+  ensures !(p ==> q) <==> p && !q
+  ensures !!p <==> p
+  ensures !(forall x :: P(x)) <==> (exists x :: !P(x))
+  ensures !(exists x :: P(x)) <==> (forall x :: !P(x))
+{}
+
+/* Dafny supports a "where" clause in a forall. It's a shorthand for implication. */
+lemma WhereIsJustImplies()
+  // we need parentheses around each side for this to have the desired meaning
+  ensures (forall x | P(x) :: Q(x)) <==> (forall x :: P(x) ==> Q(x))
+{}
+
+lemma NotForallWhere()
+  ensures !(forall x | P(x) :: Q(x)) <==> exists x :: P(x) && !Q(x)
+{}
+
+/* Dafny also supports a "where" clause in an exists, as a shorthand for &&. */
+lemma ExistsWhereIsJustAnd()
+  // we need parentheses around each side for this to have the desired meaning
+  ensures (exists x | P(x) :: Q(x)) <==> (exists x :: P(x) && Q(x))
+  // Why this choice? It's so that the following property holds. Notice that for
+  // all the negation rules we reverse && and ||, and exists and forall; this
+  // preserves that _duality_ (a formal and pervasive concept in math and
+  // logic).
+  ensures !(forall x | P(x) :: Q(x)) <==> (exists x | P(x) :: !Q(x))
 {}
