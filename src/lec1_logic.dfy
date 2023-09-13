@@ -13,7 +13,7 @@ lemma SomeAssertions() {
   assert 2 + 2 == 4;
   assert 1 < 2;
   // this one is wrong
-  assert -3*-2 == -6; // error: assertion might not hold
+  // assert -3*-2 == -6; // error: assertion might not hold
   assert 1 + 2*3 == 7;
 }
 
