@@ -160,7 +160,7 @@ lemma MilkDrink_spec_v1(coffee: CoffeeRecipe)
   match coffee {
     case Latte(milk) => {}
     case Espresso(drip) => {}
-    case Drip(oz, milk) => { // error: A postcondition might not hold on this return path
+    case Drip(oz, milk) => { // error: A postcondition could not be proved on this return path
       // the error message pinpoints this case
     }
   }

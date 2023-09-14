@@ -102,7 +102,7 @@ lemma AbsStrictlyLarger_attempt(x: int)
   // other languages.
   if x < 0 {
     // there's no error here! the postcondition actually does hold on this path
-  } else { // error: a postcondition might not hold on this return path
+  } else { // error: a postcondition could not be proved on this return path
     // But here, if we think about it, we realize abs(x) == x.
     assert abs(x) == x;
   }

@@ -76,7 +76,7 @@ lemma CheckedPreconditions(s: seq<int>, i: nat)
 lemma CheckedFunctionPreconditions(s: seq<int>, i: nat)
   // almost same as above, but notice that the error specifically points to the
   // `SeqGet` precondition
-  requires SeqGet(s, i) > 0 // error: function precondition might not hold
+  requires SeqGet(s, i) > 0 // error: function precondition could not be proved
 {}
 
 lemma SequenceAppendFact(s1: seq<int>, s2: seq<int>)
