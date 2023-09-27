@@ -108,7 +108,7 @@ opaque predicate Good(n: nat) {
 
 lemma FourIsGood_attempt1()
   ensures Good(4)
-{ // error: A postcondition might not hold on this return path
+{ // error: A postcondition could not be proved on this return path
   // notice that this proof doesn't go through - Dafny doesn't know anything
   // about Good other than it is a deterministic predicate that takes a `nat`.
 }
